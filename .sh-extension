@@ -1,0 +1,19 @@
+{
+    "requiredFiles": [],
+    "buildLogs": [],
+    "appLogs": [
+        "appsody"
+    ],
+    "appPort": [
+        "3000",
+        "9080"
+    ],
+    "capabilities": {
+        "startModes": [ 
+            "run"
+        ],
+        "controlCommands": [
+            "restart"
+        ]
+    }
+}
