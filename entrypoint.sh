@@ -75,9 +75,14 @@ if [ $? -eq 0 ]; then
 fi
 
 # Export some APPSODY env vars
-export APPSODY_MOUNT_HOME="$HOST_WORKSPACE_DIRECTORY/.extensions/appsodyExtension"
+hostWorkspacePath=`$util getWorkspacePathForVolumeMounting $LOCAL_WORKSPACE`
+export APPSODY_MOUNT_HOME="$hostWorkspacePath/.extensions/appsodyExtension"
 export APPSODY_MOUNT_CONTROLLER="$APPSODY_MOUNT_HOME/appsody-controller"
-export APPSODY_MOUNT_PROJECT="$HOST_WORKSPACE_DIRECTORY/$projectName"
+export APPSODY_MOUNT_PROJECT="$hostWorkspacePath/$projectName"
+
+echo APPSODY_MOUNT_HOME=$APPSODY_MOUNT_HOME
+echo APPSODY_MOUNT_CONTROLLER=$APPSODY_MOUNT_CONTROLLER
+echo APPSODY_MOUNT_PROJECT=$APPSODY_MOUNT_PROJECT
 
 set -o pipefail
 
@@ -292,7 +297,10 @@ function deployK8s() {
 # 		docker volume create $project-nodemodules
 # 	fi
 
-# 	docker run --network=codewind_network -e $heapdump --name $project -p 127.0.0.1::$DEBUG_PORT -P -dt -v "$LOCAL_WORKSPACE/$projectName":/app -v $project-nodemodules:/app/node_modules $project /bin/bash -c "$dockerCmd";
+# 	workspace=`$util getWorkspacePathForVolumeMounting $LOCAL_WORKSPACE`
+# 	echo "Workspace path used for volume mounting is: "$workspace""
+
+# 	docker run --network=codewind_network -e $heapdump --name $project -p 127.0.0.1::$DEBUG_PORT -P -dt -v "$workspace/$projectName":/app -v $project-nodemodules:/app/node_modules $project /bin/bash -c "$dockerCmd";
 # }
 
 function deployLocal() {
