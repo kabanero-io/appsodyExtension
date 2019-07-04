@@ -304,7 +304,6 @@ function deployK8s() {
 # }
 
 function appsodyRun() {
-	echo "Run appsody run"
 	/codewind-workspace/.extensions/appsodyExtension/appsody run --name $CONTAINER_NAME --network codewind_network -P |& tee -a $LOG_FOLDER/appsody.log &
 	/codewind-workspace/.extensions/appsodyExtension/scripts/wait-for-container.sh $CONTAINER_NAME |& tee -a $LOG_FOLDER/appsody.log
 }
@@ -327,6 +326,7 @@ function deployLocal() {
 	echo "Run appsody init (if necessary)"
 	/codewind-workspace/.extensions/appsodyExtension/scripts/dev-init.sh .appsody-config.yaml $knStack |& tee -a $LOG_FOLDER/appsody.log
 
+	echo "Run appsody run"
 	appsodyRun
 }
 
