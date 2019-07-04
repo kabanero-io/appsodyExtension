@@ -304,11 +304,20 @@ function deployK8s() {
 # }
 
 function appsodyStop() {
-	/codewind-workspace/.extensions/appsodyExtension/appsody stop |& tee -a $LOG_FOLDER/appsody.log
+	# https://github.com/appsody/appsody/issues/37
+	# /codewind-workspace/.extensions/appsodyExtension/appsody stop |& tee -a $LOG_FOLDER/appsody.log
+	docker rm -f $project
 }
 
 function appsodyStart() {
-	/codewind-workspace/.extensions/appsodyExtension/appsody run --name $CONTAINER_NAME --network codewind_network -P |& tee -a $LOG_FOLDER/appsody.log &
+
+	cmd=$START_MODE
+
+	if [ "$START_MODE" != "run" ]; then
+		cmd=debug
+	fi
+
+	/codewind-workspace/.extensions/appsodyExtension/appsody $cmd --name $CONTAINER_NAME --network codewind_network -P |& tee -a $LOG_FOLDER/appsody.log &
 	/codewind-workspace/.extensions/appsodyExtension/scripts/wait-for-container.sh $CONTAINER_NAME |& tee -a $LOG_FOLDER/appsody.log
 }
 
@@ -400,17 +409,17 @@ elif [ "$COMMAND" == "update" ]; then
 		echo "Rebuilding project: $projectName"
 		cleanContainer
 		create
-	# elif [ "$action" == "RESTART" ]; then
+	elif [ "$action" == "RESTART" ]; then
 	# 	if [ "$IN_K8" == "true" ]; then
 	# 		# Currently in ICP, changed files are only copied over through docker build
 	# 		echo "Rebuilding project: $projectName"
 	# 		create
 	# 	else
-	# 		echo "Restarting node/nodemon for changed config file"
-	# 		docker exec $project /scripts/noderun.sh stop
-	# 		$util updateAppState $PROJECT_ID $APP_STATE_STOPPING
-	# 		docker exec $project /scripts/noderun.sh start $AUTO_BUILD_ENABLED $START_MODE
-	# 		$util updateAppState $PROJECT_ID $APP_STATE_STARTING
+			echo "Restarting project: $projectName"
+			appsodyStop
+			$util updateAppState $PROJECT_ID $APP_STATE_STOPPING
+			appsodyStart
+			$util updateAppState $PROJECT_ID $APP_STATE_STARTING
 	# 	fi
 	# else
 	# 	if [ "$IN_K8" == "true" ]; then
