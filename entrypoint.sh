@@ -303,7 +303,11 @@ function deployK8s() {
 # 	docker run --network=codewind_network -e $heapdump --name $project -p 127.0.0.1::$DEBUG_PORT -P -dt -v "$workspace/$projectName":/app -v $project-nodemodules:/app/node_modules $project /bin/bash -c "$dockerCmd";
 # }
 
-function appsodyRun() {
+function appsodyStop() {
+	/codewind-workspace/.extensions/appsodyExtension/appsody stop |& tee -a $LOG_FOLDER/appsody.log
+}
+
+function appsodyStart() {
 	/codewind-workspace/.extensions/appsodyExtension/appsody run --name $CONTAINER_NAME --network codewind_network -P |& tee -a $LOG_FOLDER/appsody.log &
 	/codewind-workspace/.extensions/appsodyExtension/scripts/wait-for-container.sh $CONTAINER_NAME |& tee -a $LOG_FOLDER/appsody.log
 }
@@ -326,8 +330,8 @@ function deployLocal() {
 	echo "Run appsody init (if necessary)"
 	/codewind-workspace/.extensions/appsodyExtension/scripts/dev-init.sh .appsody-config.yaml $knStack |& tee -a $LOG_FOLDER/appsody.log
 
-	echo "Run appsody run"
-	appsodyRun
+	echo "Run appsody"
+	appsodyStart
 }
 
 # Initialize the cache with the hash for select files.  Called from project-watcher.
@@ -377,8 +381,8 @@ elif [ "$COMMAND" == "update" ]; then
 	# 	changedList+=("${changedListK8[@]}")
 	# fi
 	action=NONE
-	# if [ $FORCE_ACTION ] && [ "$FORCE_ACTION" != "NONE" ]; then
-	# 	action=$FORCE_ACTION
+	if [ $FORCE_ACTION ] && [ "$FORCE_ACTION" != "NONE" ]; then
+		action=$FORCE_ACTION
 	# else
 	# 	for item in ${changedList[@]}; do
 	# 		echo "$item changed"
@@ -390,12 +394,12 @@ elif [ "$COMMAND" == "update" ]; then
 	# 			# need to keep looking in case a Dockerfile was changed
 	# 		fi
 	# 	done
-	# fi
-	# echo "Action for project $projectName: $action"
-	# if [ "$action" == "REBUILD" ]; then
-	# 	echo "Rebuilding project: $projectName"
-	# 	cleanContainer
-	# 	create
+	fi
+	echo "Action for project $projectName: $action"
+	if [ "$action" == "REBUILD" ]; then
+		echo "Rebuilding project: $projectName"
+		cleanContainer
+		create
 	# elif [ "$action" == "RESTART" ]; then
 	# 	if [ "$IN_K8" == "true" ]; then
 	# 		# Currently in ICP, changed files are only copied over through docker build
@@ -421,19 +425,19 @@ elif [ "$COMMAND" == "update" ]; then
 	# 		docker exec $project /scripts/noderun.sh start $AUTO_BUILD_ENABLED $START_MODE
 	# 		$util updateAppState $PROJECT_ID $APP_STATE_STARTING
 	# 	fi
-	# fi
+	fi
 
 # Stop the application (not supported for ICP)
 elif [ "$COMMAND" == "stop" ]; then
 	echo "Stopping appsody project $projectName"
-	/codewind-workspace/.extensions/appsodyExtension/appsody stop |& tee -a $LOG_FOLDER/appsody.log
+	appsodyStop
 	$util updateAppState $PROJECT_ID $APP_STATE_STOPPING
 # Start the application (not supported for ICP)
 elif [ "$COMMAND" == "start" ]; then
 	echo "Starting appsody project $projectName"
 	# Clear the cache since restarting node will pick up any changes to package.json or nodemon.json
 	# clearNodeCache
-	appsodyRun
+	appsodyStart
 	$util updateAppState $PROJECT_ID $APP_STATE_STARTING
 # Enable auto build
 elif [ "$COMMAND" == "enableautobuild" ]; then
