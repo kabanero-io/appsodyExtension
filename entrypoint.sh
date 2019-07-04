@@ -303,6 +303,12 @@ function deployK8s() {
 # 	docker run --network=codewind_network -e $heapdump --name $project -p 127.0.0.1::$DEBUG_PORT -P -dt -v "$workspace/$projectName":/app -v $project-nodemodules:/app/node_modules $project /bin/bash -c "$dockerCmd";
 # }
 
+function appsodyRun() {
+	echo "Run appsody run"
+	/codewind-workspace/.extensions/appsodyExtension/appsody run --name $CONTAINER_NAME --network codewind_network -P |& tee -a $LOG_FOLDER/appsody.log &
+	/codewind-workspace/.extensions/appsodyExtension/scripts/wait-for-container.sh $CONTAINER_NAME |& tee -a $LOG_FOLDER/appsody.log
+}
+
 function deployLocal() {
 	
 	echo "Appsody deploy for $projectName"
@@ -321,9 +327,7 @@ function deployLocal() {
 	echo "Run appsody init (if necessary)"
 	/codewind-workspace/.extensions/appsodyExtension/scripts/dev-init.sh .appsody-config.yaml $knStack |& tee -a $LOG_FOLDER/appsody.log
 
-	echo "Run appsody run"
-	/codewind-workspace/.extensions/appsodyExtension/appsody run --name $CONTAINER_NAME --network codewind_network -P |& tee -a $LOG_FOLDER/appsody.log &
-	/codewind-workspace/.extensions/appsodyExtension/scripts/wait-for-container.sh $CONTAINER_NAME |& tee -a $LOG_FOLDER/appsody.log
+	appsodyRun
 }
 
 # Initialize the cache with the hash for select files.  Called from project-watcher.
@@ -429,8 +433,7 @@ elif [ "$COMMAND" == "start" ]; then
 	echo "Starting appsody project $projectName"
 	# Clear the cache since restarting node will pick up any changes to package.json or nodemon.json
 	# clearNodeCache
-	/codewind-workspace/.extensions/appsodyExtension/appsody run --name $CONTAINER_NAME --network codewind_network -P |& tee -a $LOG_FOLDER/appsody.log &
-	/codewind-workspace/.extensions/appsodyExtension/scripts/wait-for-container.sh $CONTAINER_NAME |& tee -a $LOG_FOLDER/appsody.log
+	appsodyRun
 	$util updateAppState $PROJECT_ID $APP_STATE_STARTING
 # Enable auto build
 elif [ "$COMMAND" == "enableautobuild" ]; then

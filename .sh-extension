@@ -4,10 +4,14 @@
     "appLogs": [
         "appsody"
     ],
-    "appPort": [
-        "3000",
-        "9080"
-    ],
+    "appPort": {
+        "nodejs": "3000",
+        "java": [ "9080", "9443" ]
+    },
+    "debugPort": {
+        "nodejs": "9229",
+        "java": "7777"
+    },
     "capabilities": {
         "startModes": [ 
             "run"
