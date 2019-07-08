@@ -1,6 +1,6 @@
 # appsodyExtension
 
-Support for [Appsody](https://appsody.dev) projects is available as an extension to Codewind.
+This repository is an extension to Codewind that adds support for [Appsody](https://appsody.dev) projects.
 
 - appsody version: 0.2.2
 - appsody controller version: 0.2.1
