@@ -37,6 +37,24 @@ $ curl "http://localhost:9090/api/v1/templates/repositories" \
 
 After installing the Appsody extension and templates, you can create an Appsody project the same way you create other projects simply by selecting one of the Appsody templates.
 
+# Building the Full Application Image
+
+1. Open a terminal into the Codewind server container:
+
+   `docker exec -it codewind-pfe bash`
+   
+2. Run the following command, replacing *projectName* with the name of the project to build:
+
+   `export APPSODY_MOUNT_PROJECT=$HOST_WORKSPACE_DIRECTORY/projectName`
+
+3. Go into the project directory:
+
+   `cd /codewind-workspace/projectName`
+   
+4. Run the command below. A docker image of the application will be built with the name *projectName*.
+
+   `/codewind-workspace/.extensions/appsodyExtension/appsody build`
+
 # Limitations for Tech Preview
 
 - There are currently only two Appsody templates, one for the Node.js Express stack and one for Java MicroProfile stack
