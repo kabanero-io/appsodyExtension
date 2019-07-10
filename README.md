@@ -15,7 +15,16 @@ Restart Codewind to pick up the new extension.
 
 ## Adding the Appsody Templates
 
-With Codewind running, execute the following `curl` command to add the Appsody templates to Codewind:
+With Codewind running, add the Appsody templates to Codewind by making a `POST` request to the http://localhost:9090/api/v1/templates/repositories REST API endpoint with the following content:
+
+```json
+{
+    "url": "https://raw.githubusercontent.com/kabanero-io/codewind-appsody-templates/master/devfiles/index.json",
+    "description": "Appsody templates"
+}
+```
+
+You may make the request using a REST client utility such as [Postman](https://www.getpostman.com/products) or by using the `curl` command, e.g.:
 
 ```bash
 $ curl "http://localhost:9090/api/v1/templates/repositories" \
