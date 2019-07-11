@@ -1,13 +1,21 @@
 #!/bin/bash
-#*******************************************************************************
-# Licensed Materials - Property of IBM
-# "Restricted Materials of IBM"
+###################################################################################
 #
-# Copyright IBM Corp. 2019 All Rights Reserved
+# Copyright 2019 IBM Corporation and others.
 #
-# US Government Users Restricted Rights - Use, duplication or disclosure
-# restricted by GSA ADP Schedule Contract with IBM Corp.
-#*******************************************************************************
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+###################################################################################
 
 ROOT=$1
 LOCAL_WORKSPACE=$2
@@ -98,188 +106,188 @@ function cleanContainer() {
 
 function create() {
 	# Run the project using either helm or docker run
-	if [ "$IN_K8" == "true" ]; then
-		deployK8s
-	else
+	# if [ "$IN_K8" == "true" ]; then
+	# 	deployK8s
+	# else
 		deployLocal
-	fi
+	# fi
 }
 
-function deployK8s() {
-	# Find the Helm chart folder, error out if it can't be found
-	if [[ -d "chart/$projectName" ]] && [[ -f "chart/$projectName/Chart.yaml" ]]; then
-		chartDir="chart/$projectName"
-	else
-		chartDir="$(find . -type f -name '*Chart.yaml*' | sed -r 's|/[^/]+$||' | sort | uniq | head -n1)"
-		if [[ ! -d "$chartDir" ]]; then
-			echo "Exiting, Unable to find the Helm chart for project $projectName"
-			$util updateBuildState $PROJECT_ID $BUILD_STATE_FAILED "buildscripts.noHelmChart"
-			exit 1;
-		fi
-	fi
-	chartName=$( basename $chartDir )
-	tmpChart=/tmp/$projectName/$chartName
+# function deployK8s() {
+# 	# Find the Helm chart folder, error out if it can't be found
+# 	if [[ -d "chart/$projectName" ]] && [[ -f "chart/$projectName/Chart.yaml" ]]; then
+# 		chartDir="chart/$projectName"
+# 	else
+# 		chartDir="$(find . -type f -name '*Chart.yaml*' | sed -r 's|/[^/]+$||' | sort | uniq | head -n1)"
+# 		if [[ ! -d "$chartDir" ]]; then
+# 			echo "Exiting, Unable to find the Helm chart for project $projectName"
+# 			$util updateBuildState $PROJECT_ID $BUILD_STATE_FAILED "buildscripts.noHelmChart"
+# 			exit 1;
+# 		fi
+# 	fi
+# 	chartName=$( basename $chartDir )
+# 	tmpChart=/tmp/$projectName/$chartName
 
-	# Copy project chart dir to a tmp location for chart modify and helm install
-	echo "Copying chart dir $chartDir to $tmpChart"
-	if [[ -d $tmpChart ]]; then
-		rm -rf $tmpChart
-	fi
-	mkdir -p $tmpChart
-	cp -fR $chartDir/* $tmpChart
-	parentDir=$( dirname $tmpChart )
+# 	# Copy project chart dir to a tmp location for chart modify and helm install
+# 	echo "Copying chart dir $chartDir to $tmpChart"
+# 	if [[ -d $tmpChart ]]; then
+# 		rm -rf $tmpChart
+# 	fi
+# 	mkdir -p $tmpChart
+# 	cp -fR $chartDir/* $tmpChart
+# 	parentDir=$( dirname $tmpChart )
 
-	echo "Modifying charts and running Helm install from $chartDir"
+# 	echo "Modifying charts and running Helm install from $chartDir"
 
-	# Render the template yamls for the chart
-	helm template $tmpChart \
-		--name $project \
-		--values=/file-watcher/scripts/override-values-icp.yaml \
-		--set image.repository=$DEPLOYMENT_REGISTRY/$project \
-		--output-dir=$parentDir
+# 	# Render the template yamls for the chart
+# 	helm template $tmpChart \
+# 		--name $project \
+# 		--values=/file-watcher/scripts/override-values-icp.yaml \
+# 		--set image.repository=$DEPLOYMENT_REGISTRY/$project \
+# 		--output-dir=$parentDir
 
-	deploymentFile=$( /file-watcher/scripts/kubeScripts/find-kube-resource.sh $tmpChart Deployment )
-	if [[ -z $deploymentFile ]]; then
-		echo "Error, unable to find a deployment file in the Helm chart."
-		$util updateBuildState $PROJECT_ID $BUILD_STATE_FAILED "buildscripts.noDeployment"
-		exit 1
-	fi
-	serviceFile=$( /file-watcher/scripts/kubeScripts/find-kube-resource.sh $tmpChart Service )
-	if [[ -z $serviceFile ]]; then
-		echo "Error, unable to find a service file in the Helm chart."
-		$util updateBuildState $PROJECT_ID $BUILD_STATE_FAILED "buildscripts.noService"
-		exit 1
-	fi
+# 	deploymentFile=$( /file-watcher/scripts/kubeScripts/find-kube-resource.sh $tmpChart Deployment )
+# 	if [[ -z $deploymentFile ]]; then
+# 		echo "Error, unable to find a deployment file in the Helm chart."
+# 		$util updateBuildState $PROJECT_ID $BUILD_STATE_FAILED "buildscripts.noDeployment"
+# 		exit 1
+# 	fi
+# 	serviceFile=$( /file-watcher/scripts/kubeScripts/find-kube-resource.sh $tmpChart Service )
+# 	if [[ -z $serviceFile ]]; then
+# 		echo "Error, unable to find a service file in the Helm chart."
+# 		$util updateBuildState $PROJECT_ID $BUILD_STATE_FAILED "buildscripts.noService"
+# 		exit 1
+# 	fi
 
-	# Add the necessary labels and serviceaccount to the chart
-	/file-watcher/scripts/kubeScripts/modify-helm-chart.sh $deploymentFile $serviceFile $project
+# 	# Add the necessary labels and serviceaccount to the chart
+# 	/file-watcher/scripts/kubeScripts/modify-helm-chart.sh $deploymentFile $serviceFile $project
 
-	# Push app container image to docker registry if one is set up
-	if [[ ! -z $DEPLOYMENT_REGISTRY ]]; then
+# 	# Push app container image to docker registry if one is set up
+# 	if [[ ! -z $DEPLOYMENT_REGISTRY ]]; then
 
-		# If the image already exists, remove it as well.
-		# Fix for no nodemon in ICP.
-		if [ "$( docker images -q $project )" ]; then
-			docker rmi -f $project
-		fi
-		if [ "$( docker images -q $DEPLOYMENT_REGISTRY/$project )" ]; then
-			docker rmi -f $DEPLOYMENT_REGISTRY/$project
-		fi
-		# If there's an existing failed Helm release, delete it. See https://github.com/helm/helm/issues/3353
-		if [ "$( helm list $project --failed )" ]; then
-			$util updateAppState $PROJECT_ID $APP_STATE_STOPPING
-			helm delete $project --purge
-		fi
+# 		# If the image already exists, remove it as well.
+# 		# Fix for no nodemon in ICP.
+# 		if [ "$( docker images -q $project )" ]; then
+# 			docker rmi -f $project
+# 		fi
+# 		if [ "$( docker images -q $DEPLOYMENT_REGISTRY/$project )" ]; then
+# 			docker rmi -f $DEPLOYMENT_REGISTRY/$project
+# 		fi
+# 		# If there's an existing failed Helm release, delete it. See https://github.com/helm/helm/issues/3353
+# 		if [ "$( helm list $project --failed )" ]; then
+# 			$util updateAppState $PROJECT_ID $APP_STATE_STOPPING
+# 			helm delete $project --purge
+# 		fi
 
-		echo "$BUILD_IMAGE_INPROGRESS_MSG $projectName"
-		$util updateBuildState $PROJECT_ID $BUILD_STATE_INPROGRESS "buildscripts.buildImage"
+# 		echo "$BUILD_IMAGE_INPROGRESS_MSG $projectName"
+# 		$util updateBuildState $PROJECT_ID $BUILD_STATE_INPROGRESS "buildscripts.buildImage"
 
-		echo -e "Touching docker container build log file: "$LOG_FOLDER/$DOCKER_BUILD.log""
-		touch "$LOG_FOLDER/$DOCKER_BUILD.log"
-		echo -e "Triggering log file event for: docker container build log"
- 		$util newLogFileAvailable $PROJECT_ID "build"
+# 		echo -e "Touching docker container build log file: "$LOG_FOLDER/$DOCKER_BUILD.log""
+# 		touch "$LOG_FOLDER/$DOCKER_BUILD.log"
+# 		echo -e "Triggering log file event for: docker container build log"
+#  		$util newLogFileAvailable $PROJECT_ID "build"
 
-		echo -e "Docker build log file "$LOG_FOLDER/$DOCKER_BUILD.log""
-		docker build -t $project . |& tee "$LOG_FOLDER/$DOCKER_BUILD.log"
-		exitCode=$?
-		imageLastBuild=$(($(date +%s)*1000))
-		if [ $exitCode -eq 0 ]; then
-			echo "Docker build successful for $projectName"
-			$util updateBuildState $PROJECT_ID $BUILD_STATE_SUCCESS " " "$imageLastBuild"
-		else
-			echo "$BUILD_IMAGE_FAILED_MSG $projectName" >&2
-			$util updateBuildState $PROJECT_ID $BUILD_STATE_FAILED "buildscripts.buildFail"
-			exit 1
-		fi
+# 		echo -e "Docker build log file "$LOG_FOLDER/$DOCKER_BUILD.log""
+# 		docker build -t $project . |& tee "$LOG_FOLDER/$DOCKER_BUILD.log"
+# 		exitCode=$?
+# 		imageLastBuild=$(($(date +%s)*1000))
+# 		if [ $exitCode -eq 0 ]; then
+# 			echo "Docker build successful for $projectName"
+# 			$util updateBuildState $PROJECT_ID $BUILD_STATE_SUCCESS " " "$imageLastBuild"
+# 		else
+# 			echo "$BUILD_IMAGE_FAILED_MSG $projectName" >&2
+# 			$util updateBuildState $PROJECT_ID $BUILD_STATE_FAILED "buildscripts.buildFail"
+# 			exit 1
+# 		fi
 
-		# Tag and push the image to the registry
-		docker tag $project $DEPLOYMENT_REGISTRY/$project
-		docker push $DEPLOYMENT_REGISTRY/$project
+# 		# Tag and push the image to the registry
+# 		docker tag $project $DEPLOYMENT_REGISTRY/$project
+# 		docker push $DEPLOYMENT_REGISTRY/$project
 
-		if [ $? -eq 0 ]; then
-			echo "Successfully tagged and pushed the application image $DEPLOYMENT_REGISTRY/$project"
-		else
-			echo "Error: $?, could not push application image $DEPLOYMENT_REGISTRY/$project" >&2
-			$util deploymentRegistryStatus $PROJECT_ID "buildscripts.invalidDeploymentRegistry"
-			exit 1;
-		fi
+# 		if [ $? -eq 0 ]; then
+# 			echo "Successfully tagged and pushed the application image $DEPLOYMENT_REGISTRY/$project"
+# 		else
+# 			echo "Error: $?, could not push application image $DEPLOYMENT_REGISTRY/$project" >&2
+# 			$util deploymentRegistryStatus $PROJECT_ID "buildscripts.invalidDeploymentRegistry"
+# 			exit 1;
+# 		fi
 
-		# Install the application using helm.
-		helm upgrade \
-			--install $project \
-			--recreate-pods \
-			$tmpChart;
-	else
-		echo "$BUILD_IMAGE_INPROGRESS_MSG $projectName"
-		$util updateBuildState $PROJECT_ID $BUILD_STATE_INPROGRESS "buildscripts.buildImage"
+# 		# Install the application using helm.
+# 		helm upgrade \
+# 			--install $project \
+# 			--recreate-pods \
+# 			$tmpChart;
+# 	else
+# 		echo "$BUILD_IMAGE_INPROGRESS_MSG $projectName"
+# 		$util updateBuildState $PROJECT_ID $BUILD_STATE_INPROGRESS "buildscripts.buildImage"
 
-		echo -e "Touching docker container build log file: "$LOG_FOLDER/$DOCKER_BUILD.log""
-		touch "$LOG_FOLDER/$DOCKER_BUILD.log"
-		echo -e "Triggering log file event for: docker container build log"
- 		$util newLogFileAvailable $PROJECT_ID "build"
+# 		echo -e "Touching docker container build log file: "$LOG_FOLDER/$DOCKER_BUILD.log""
+# 		touch "$LOG_FOLDER/$DOCKER_BUILD.log"
+# 		echo -e "Triggering log file event for: docker container build log"
+#  		$util newLogFileAvailable $PROJECT_ID "build"
 
-		echo -e "Docker build log file "$LOG_FOLDER/$DOCKER_BUILD.log""
-		docker build -t $project . |& tee "$LOG_FOLDER/$DOCKER_BUILD.log"
-		exitCode=$?
-		imageLastBuild=$(($(date +%s)*1000))
-		if [ $exitCode -eq 0 ]; then
-			echo "Docker build successful for $projectName"
-			$util updateBuildState $PROJECT_ID $BUILD_STATE_SUCCESS " " "$imageLastBuild"
-		else
-			echo "$BUILD_IMAGE_FAILED_MSG $projectName" >&2
-			$util updateBuildState $PROJECT_ID $BUILD_STATE_FAILED "buildscripts.buildFail"
-			exit 1
-		fi
-		helm upgrade \
-			--install $project \
-			--recreate-pods \
-			$tmpChart;
-	fi
+# 		echo -e "Docker build log file "$LOG_FOLDER/$DOCKER_BUILD.log""
+# 		docker build -t $project . |& tee "$LOG_FOLDER/$DOCKER_BUILD.log"
+# 		exitCode=$?
+# 		imageLastBuild=$(($(date +%s)*1000))
+# 		if [ $exitCode -eq 0 ]; then
+# 			echo "Docker build successful for $projectName"
+# 			$util updateBuildState $PROJECT_ID $BUILD_STATE_SUCCESS " " "$imageLastBuild"
+# 		else
+# 			echo "$BUILD_IMAGE_FAILED_MSG $projectName" >&2
+# 			$util updateBuildState $PROJECT_ID $BUILD_STATE_FAILED "buildscripts.buildFail"
+# 			exit 1
+# 		fi
+# 		helm upgrade \
+# 			--install $project \
+# 			--recreate-pods \
+# 			$tmpChart;
+# 	fi
 
-	if [ $? -eq 0 ]; then
-		echo "Helm install successful for $projectName"
-		$util updateBuildState $PROJECT_ID $BUILD_STATE_SUCCESS " "
-		$util updateAppState $PROJECT_ID $APP_STATE_STARTING
-	else
-		echo "Helm install failed for $projectName with exit code $?, exiting" >&2
-		$util updateBuildState $PROJECT_ID $BUILD_STATE_FAILED "buildscripts.buildFail"
-		exit 1
-	fi
+# 	if [ $? -eq 0 ]; then
+# 		echo "Helm install successful for $projectName"
+# 		$util updateBuildState $PROJECT_ID $BUILD_STATE_SUCCESS " "
+# 		$util updateAppState $PROJECT_ID $APP_STATE_STARTING
+# 	else
+# 		echo "Helm install failed for $projectName with exit code $?, exiting" >&2
+# 		$util updateBuildState $PROJECT_ID $BUILD_STATE_FAILED "buildscripts.buildFail"
+# 		exit 1
+# 	fi
 
-	# Wait until the pod is up and running
-	POD_RUNNING=0
-	while [ $POD_RUNNING -eq 0 ]; do
-		RESULT="$( kubectl get po --selector=release=$project )"
-		if [[ $RESULT = *"Running"* ]]; then
-			POD_RUNNING=1
-		elif [[ -z "$RESULT" || $RESULT = *"Failure"* || $RESULT = *"Unknown"* || $RESULT = *"ImagePullBackOff"* || $RESULT = *"CrashLoopBackOff"* ]]; then
-			echo "Error: Pod for Helm release $project failed to start" >&2
-			errorMsg="Error starting project $projectName: pod for helm release $project failed to start"  # :NLS
-			$util updateAppState $PROJECT_ID $APP_STATE_STOPPED "$errorMsg"
+# 	# Wait until the pod is up and running
+# 	POD_RUNNING=0
+# 	while [ $POD_RUNNING -eq 0 ]; do
+# 		RESULT="$( kubectl get po --selector=release=$project )"
+# 		if [[ $RESULT = *"Running"* ]]; then
+# 			POD_RUNNING=1
+# 		elif [[ -z "$RESULT" || $RESULT = *"Failure"* || $RESULT = *"Unknown"* || $RESULT = *"ImagePullBackOff"* || $RESULT = *"CrashLoopBackOff"* ]]; then
+# 			echo "Error: Pod for Helm release $project failed to start" >&2
+# 			errorMsg="Error starting project $projectName: pod for helm release $project failed to start"  # :NLS
+# 			$util updateAppState $PROJECT_ID $APP_STATE_STOPPED "$errorMsg"
 
-			# Print the Helm status before deleting the release
-			helm status $project
+# 			# Print the Helm status before deleting the release
+# 			helm status $project
 
-			helm delete $project --purge
-			exit 1;
-		fi
-		sleep 1;
-	done
+# 			helm delete $project --purge
+# 			exit 1;
+# 		fi
+# 		sleep 1;
+# 	done
 
-	echo "The pod for helm release $project is now up"
+# 	echo "The pod for helm release $project is now up"
 
-	# Delete any pods left that are terminating, to ensure they go away
-	/file-watcher/scripts/kubeScripts/clear-terminating-pods.sh $project
+# 	# Delete any pods left that are terminating, to ensure they go away
+# 	/file-watcher/scripts/kubeScripts/clear-terminating-pods.sh $project
 
-	echo -e "Touching application log file: "$LOG_FOLDER/$APP_LOG.log""
-	touch "$LOG_FOLDER/$APP_LOG.log"
-	echo -e "Triggering log file event for: application log"
- 	$util newLogFileAvailable $PROJECT_ID "app"
+# 	echo -e "Touching application log file: "$LOG_FOLDER/$APP_LOG.log""
+# 	touch "$LOG_FOLDER/$APP_LOG.log"
+# 	echo -e "Triggering log file event for: application log"
+#  	$util newLogFileAvailable $PROJECT_ID "app"
 
-	# add the app logs
-	echo -e "App log file "$LOG_FOLDER/$APP_LOG.log""
-	kubectl logs -f $(kubectl get po -o name --selector=release=$project) >> "$LOG_FOLDER/$APP_LOG.log" &
-}
+# 	# add the app logs
+# 	echo -e "App log file "$LOG_FOLDER/$APP_LOG.log""
+# 	kubectl logs -f $(kubectl get po -o name --selector=release=$project) >> "$LOG_FOLDER/$APP_LOG.log" &
+# }
 
 # function dockerRun() {
 # 	# Map container to different port than the project is using
@@ -304,9 +312,7 @@ function deployK8s() {
 # }
 
 function appsodyStop() {
-	# https://github.com/appsody/appsody/issues/37
-	# /codewind-workspace/.extensions/appsodyExtension/appsody stop |& tee -a $LOG_FOLDER/appsody.log
-	docker rm -f $project
+	/codewind-workspace/.extensions/appsodyExtension/appsody stop --name $CONTAINER_NAME |& tee -a $LOG_FOLDER/appsody.log
 }
 
 function appsodyStart() {
