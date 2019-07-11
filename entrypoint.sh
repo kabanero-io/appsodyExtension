@@ -312,9 +312,7 @@ function deployK8s() {
 # }
 
 function appsodyStop() {
-	# https://github.com/appsody/appsody/issues/37
-	# /codewind-workspace/.extensions/appsodyExtension/appsody stop |& tee -a $LOG_FOLDER/appsody.log
-	docker rm -f $project
+	/codewind-workspace/.extensions/appsodyExtension/appsody stop --name $CONTAINER_NAME |& tee -a $LOG_FOLDER/appsody.log
 }
 
 function appsodyStart() {
