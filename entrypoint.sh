@@ -511,5 +511,5 @@ elif [ "$COMMAND" == "rebuild" ]; then
 	create
 # Just return configuration information as last line out output
 else
-	echo -n "{ \"stack\": \"$knStack\" }"
+	echo -n "{ \"language\": \"$knStack\" }"
 fi
