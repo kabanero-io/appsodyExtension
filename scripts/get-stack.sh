@@ -19,8 +19,8 @@
 
 if grep --quiet "nodejs-express" $1; then
 	echo nodejs-express
-elif grep --quiet "java-spring-boot2" $1; then
-	echo java-spring-boot2
 elif grep --quiet "java-microprofile" $1; then
     echo java-microprofile
+elif grep --quiet "java-spring-boot2" $1; then
+	echo java-spring-boot2
 fi
