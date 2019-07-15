@@ -5,12 +5,14 @@
         "appsody"
     ],
     "appPort": {
-        "nodejs": "3000",
-        "java": [ "8080", "35729", "9080", "9443" ]
+        "nodejs-express": "3000",
+        "java-microprofile": "9080",
+        "java-spring-boot2": "8080"
     },
     "debugPort": {
-        "nodejs": "9229",
-        "java": "7777"
+        "nodejs-express": "9229",
+        "java-microprofile": "7777",
+        "java-spring-boot2": "5005"
     },
     "capabilities": {
         "startModes": [ 
