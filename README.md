@@ -55,9 +55,9 @@ After installing the Appsody extension and templates, you can create an Appsody 
 
    `/codewind-workspace/.extensions/appsodyExtension/appsody build`
 
-# Limitations for Tech Preview
+# Current Limitations
 
-- There are currently only two Appsody templates, one for the Node.js Express stack and one for Java MicroProfile stack
+- Currently you can use these two Appsody templates:  Node.js Express stack and Java MicroProfile stack.  More are coming shortly.
 - Debugging of Appsody projects in Codewind is not supported at this time
-- Enabling and disabling auto build is not supported for Appsody projects
-- Appsody is not supported on Codewind on Eclipse Che
+- Enabling and disabling auto build in Codewind is not supported for Appsody projects
+- Appsody is supported on VS Code and Elcipse but not Eclipse Che at this time.
