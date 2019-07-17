@@ -509,7 +509,7 @@ elif [ "$COMMAND" == "rebuild" ]; then
 	echo "Rebuilding project: $projectName"
 	cleanContainer
 	create
-# Just return configuration information as last line out output
+# Just return configuration information as last line of output
 else
 	echo -n "{ \"language\": \"$knStack\" }"
 fi
