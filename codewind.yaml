@@ -1,4 +1,5 @@
 name: appsodyExtension
+version: 0.2.1
 description: Appsody extension for Codewind
 projectType: appsodyExtension
 commands: []
