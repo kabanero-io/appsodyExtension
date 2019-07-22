@@ -1,0 +1,23 @@
+{
+  "name": "appsody-extension",
+  "version": "0.2.2",
+  "description": "Appsody extension for Codewind",
+  "main": "templatesProvider.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kabanero-io/appsodyExtension.git"
+  },
+  "author": "makandre@ca.ibm.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kabanero-io/appsodyExtension/issues"
+  },
+  "homepage": "https://github.com/kabanero-io/appsodyExtension#readme",
+  "dependencies": {
+    "js-yaml": "^3.13.1",
+    "request": "^2.88.0"
+  }
+}

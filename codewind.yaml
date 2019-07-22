@@ -1,7 +1,6 @@
 name: appsodyExtension
-version: 0.2.1
+version: 0.2.2
 description: Appsody extension for Codewind
 projectType: appsodyExtension
 commands: []
 detection: .appsody-config.yaml
-templates: https://raw.githubusercontent.com/kabanero-io/codewind-appsody-templates/master/devfiles/index.json
