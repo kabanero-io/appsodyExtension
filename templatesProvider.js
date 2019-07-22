@@ -18,8 +18,8 @@
 
 'use strict';
 
-const request = require('request');
-const yaml = require('js-yaml');
+const request = module.parent.require('request');
+const yaml = module.parent.require('js-yaml');
 
 const supportedStacks = [
     'java-microprofile',
