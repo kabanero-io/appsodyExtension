@@ -5,3 +5,7 @@ projectType: appsodyExtension
 commands: []
 detection: .appsody-config.yaml
 templates: https://raw.githubusercontent.com/kabanero-io/codewind-appsody-templates/master/devfiles/index.json
+config:
+  mounts:
+    - path: "$HOME/.appsody:/mnt/.appsody"
+      mode: create
