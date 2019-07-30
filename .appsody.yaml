@@ -1,0 +1,3 @@
+home: /mnt/.appsody
+images: index.docker.io
+tektonserver: ""
