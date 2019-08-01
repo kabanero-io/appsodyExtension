@@ -18,58 +18,14 @@
 
 'use strict';
 
-const request = module.parent.require('request');
-const yaml = module.parent.require('js-yaml');
-
-const supportedStacks = [
-    'java-microprofile',
-    'java-spring-boot2',
-    'nodejs-express'
-];
-
-function readIndex() {
-
-    const index = 'https://raw.githubusercontent.com/appsody/stacks/master/index.yaml';
-
-    return new Promise((resolve, reject) => {
-        request.get(index, {}, (err, response, body) => {
-
-            if (err)
-                return reject(err);
-
-            // check status, may have gotten NOT FOUND etc.
-            else if (response.statusCode != 200) 
-                return reject(new Error('Appsody: failed to read ' + index));
-
-            resolve(body);
-        });
-    });
-}
-
 module.exports = {
 
-    getTemplates: async function() {
-
-        const templates = [];
-
-        const index = await readIndex();
-        const json = yaml.safeLoad(index);
-
-        for (let stackName of supportedStacks) {
-
-            const stacks = json.projects[stackName];
-            
-            if (stacks && stacks.length > 0) {
-                templates.push({
-                    projectType: 'appsodyExtension',
-                    label: `Appsody ${stackName} template`,
-                    description: stacks[0].description,
-                    url: stacks[0].urls[0],
-                    language: (stackName == 'nodejs-express') ? 'nodejs' : 'java' // temporary
-                });
+    getRepositories: async function() {
+        return [
+            {
+                url: 'https://raw.githubusercontent.com/makandre/stacks/index_json/devfiles/index.json',
+                description: 'appsodyhub'
             }
-        }
-        
-        return templates;
+        ];
     }
 }
