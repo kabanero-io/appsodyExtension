@@ -7,7 +7,7 @@ This repository is an extension to Codewind that adds support for [Appsody](http
 
 ## Installing the Appsody Extension on Codewind
 
-Clone or download this repository to your Codewind workspace's `.extensions` folder, i.e.
+Download the latest [release](https://github.com/kabanero-io/appsodyExtension/releases) and unzip or untar it to your Codewind workspace's `.extensions` folder, i.e.
 
 `<codewind-workspace>/.extensions/appsodyExtension`
 
