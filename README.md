@@ -7,17 +7,17 @@ This repository is an extension to Codewind that adds support for [Appsody](http
 
 ## Installing the Appsody Extension on Codewind
 
-Clone or download this repository to your Codewind workspace's `.extensions` folder, i.e.
+Download the latest [release](https://github.com/kabanero-io/appsodyExtension/releases) and unzip or untar it to your Codewind workspace's `.extensions` folder, i.e.
 
 `<codewind-workspace>/.extensions/appsodyExtension`
 
 Restart Codewind to pick up the new extension.
 
-# Creating an Appsody Project
+## Creating an Appsody Project
 
 After installing the Appsody extension, the Appsody project templates will become available in Codewind, allowing you to create Appsody projects the same way you create other projects.
 
-# Building the Full Application Image
+## Building the Full Application Image
 
 1. Open a terminal into the Codewind server container:
 
@@ -35,7 +35,7 @@ After installing the Appsody extension, the Appsody project templates will becom
 
    `/codewind-workspace/.extensions/appsodyExtension/appsody build`
 
-# Current Limitations
+## Current Limitations
 
 - Currently you can use these Appsody templates:  Node.js Express stack, Java MicroProfile stack, and Java Spring Boot 2 stack.  More are coming shortly.
 - Debugging of Appsody projects in Codewind is not yet supported.
