@@ -33,11 +33,11 @@ $ curl "http://localhost:9090/api/v1/templates/repositories" \
 -H "Content-Type: application/json"
 ```
 
-# Creating an Appsody Project
+## Creating an Appsody Project
 
 After installing the Appsody extension and templates, you can create an Appsody project the same way you create other projects simply by selecting one of the Appsody templates.
 
-# Building the Full Application Image
+## Building the Full Application Image
 
 1. Open a terminal into the Codewind server container:
 
@@ -55,7 +55,7 @@ After installing the Appsody extension and templates, you can create an Appsody 
 
    `/codewind-workspace/.extensions/appsodyExtension/appsody build`
 
-# Current Limitations
+## Current Limitations
 
 - Currently you can use these Appsody templates:  Node.js Express stack, Java MicroProfile stack, and Java Spring Boot 2 stack.  More are coming shortly.
 - Debugging of Appsody projects in Codewind is not yet supported.
