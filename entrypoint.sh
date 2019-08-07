@@ -85,7 +85,7 @@ fi
 # Export some APPSODY env vars
 hostWorkspacePath=`$util getWorkspacePathForVolumeMounting $LOCAL_WORKSPACE`
 export APPSODY_MOUNT_HOME="$hostWorkspacePath/.extensions/appsodyExtension"
-export APPSODY_MOUNT_CONTROLLER="$APPSODY_MOUNT_HOME/appsody-controller"
+export APPSODY_MOUNT_CONTROLLER="$APPSODY_MOUNT_HOME/bin/appsody-controller"
 export APPSODY_MOUNT_PROJECT="$hostWorkspacePath/$projectName"
 
 echo APPSODY_MOUNT_HOME=$APPSODY_MOUNT_HOME
