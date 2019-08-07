@@ -2,8 +2,8 @@
 
 This repository is an extension to Codewind that adds support for [Appsody](https://appsody.dev) projects.
 
-- appsody version: [0.2.8](https://github.com/appsody/appsody/releases/tag/0.2.8)
-- appsody controller version: [0.2.2](https://github.com/appsody/controller/releases/tag/0.2.2)
+- Appsody version: [0.2.8](https://github.com/appsody/appsody/releases/tag/0.2.8)
+- Appsody controller version: [0.2.2](https://github.com/appsody/controller/releases/tag/0.2.2)
 
 ## Installing the Appsody Extension on Codewind
 
@@ -34,6 +34,16 @@ After installing the Appsody extension, the Appsody project templates will becom
 4. Run the command below. A docker image of the application will be built with the name *projectName*.
 
    `/codewind-workspace/.extensions/appsodyExtension/appsody build`
+
+## Using the Same Appsody Configuration Between Local CLI and Codewind
+
+If you have a local install of the Appsody CLI, you can configure it to use the same configuration as Codewind.
+
+1. Open the `.appsody.yaml` configuration file that the Appsody CLI is using in an editor (by default, this file is located in your home directory, under the `.appsody` folder, but this can be changed via Appsody's [`--config`](https://appsody.dev/docs/using-appsody/cli-commands) flag)
+
+2. Change the `home` property to point the Codewind's copy of the Appsody configuration
+
+   `home: /some_path/codewind-workspace/.appsody`
 
 ## Current Limitations
 
