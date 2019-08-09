@@ -4,14 +4,20 @@
     "appLogs": [
         "appsody"
     ],
-    "appPort": [
-        "3000",
-        "8080",
-        "9080"
-    ],
+    "appPort": {
+        "nodejs-express": "3000",
+        "java-microprofile": "9080",
+        "java-spring-boot2": "8080"
+    },
+    "debugPort": {
+        "nodejs-express": "9229",
+        "java-microprofile": "7777",
+        "java-spring-boot2": "5005"
+    },
     "capabilities": {
         "startModes": [ 
-            "run"
+            "run",
+            "debugNoInit"
         ],
         "controlCommands": [
             "restart"

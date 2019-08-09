@@ -509,7 +509,7 @@ elif [ "$COMMAND" == "rebuild" ]; then
 	echo "Rebuilding project: $projectName"
 	cleanContainer
 	create
+# Just return configuration information as last line of output
 else
-	echo "ERROR: $COMMAND is not a recognized command" >&2
-
+	echo -n "{ \"language\": \"$knStack\" }"
 fi
