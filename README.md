@@ -17,7 +17,7 @@ Restart Codewind to pick up the new extension.
 
 After installing the Appsody extension, the Appsody project templates will become available in Codewind, allowing you to create Appsody projects the same way you create other projects.
 
-## Building the Full Application Image
+## Optional: Building the Full Application Image
 
 1. Open a terminal into the Codewind server container:
 
@@ -35,7 +35,7 @@ After installing the Appsody extension, the Appsody project templates will becom
 
    `/codewind-workspace/.extensions/appsodyExtension/appsody build`
 
-## Using the Same Appsody Configuration Between Local CLI and Codewind
+## Optional: Using the Same Appsody Configuration Between Local CLI and Codewind
 
 If you have a local install of the Appsody CLI, you can configure it to use the same configuration as Codewind.
 
@@ -47,7 +47,5 @@ If you have a local install of the Appsody CLI, you can configure it to use the 
 
 ## Current Limitations
 
-- Currently you can use these Appsody templates:  Node.js Express stack, Java MicroProfile stack, and Java Spring Boot 2 stack.  More are coming shortly.
-- Debugging of Appsody projects in Codewind is not yet supported.
 - Enabling and disabling auto build in Codewind is not supported for Appsody projects.
 - Appsody is supported on Codewind on VS Code and on Eclipse, but not on Eclipse Che at this time.
