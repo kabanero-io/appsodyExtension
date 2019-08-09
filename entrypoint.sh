@@ -342,8 +342,8 @@ function deployLocal() {
 	echo "Appsody app log file $LOG_FOLDER/appsody.log"
 	$util newLogFileAvailable $PROJECT_ID "app"
 
-	echo "Run appsody init (if necessary)"
-	/codewind-workspace/.extensions/appsodyExtension/scripts/dev-init.sh .appsody-config.yaml $knStack |& tee -a $LOG_FOLDER/appsody.log
+	echo "Run appsody init"
+	/codewind-workspace/.extensions/appsodyExtension/appsody init |& tee -a $LOG_FOLDER/appsody.log
 
 	echo "Run appsody"
 	appsodyStart
