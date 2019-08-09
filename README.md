@@ -37,7 +37,7 @@ $ curl "http://localhost:9090/api/v1/templates/repositories" \
 
 After installing the Appsody extension and templates, you can create an Appsody project the same way you create other projects simply by selecting one of the Appsody templates.
 
-## Building the Full Application Image
+## Optional: Building the Full Application Image
 
 1. Open a terminal into the Codewind server container:
 
@@ -55,7 +55,7 @@ After installing the Appsody extension and templates, you can create an Appsody 
 
    `/codewind-workspace/.extensions/appsodyExtension/appsody build`
 
-## Using the Same Appsody Configuration Between Local CLI and Codewind
+## Optional: Using the Same Appsody Configuration Between Local CLI and Codewind
 
 If you have a local install of the Appsody CLI, you can configure it to use the same configuration as Codewind.
 
