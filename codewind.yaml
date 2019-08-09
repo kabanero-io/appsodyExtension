@@ -4,3 +4,5 @@ description: Appsody extension for Codewind
 projectType: appsodyExtension
 commands: []
 detection: .appsody-config.yaml
+config:
+  containerAppRoot: /project/user-app
