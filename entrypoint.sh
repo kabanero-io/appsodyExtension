@@ -77,11 +77,6 @@ source /file-watcher/scripts/constants.sh
 echo project=$project
 cd "$ROOT"
 
-# Run following only if cd successful, meaning directory exists
-if [ $? -eq 0 ]; then
-   knStack=`/codewind-workspace/.extensions/appsodyExtension/scripts/get-stack.sh .appsody-config.yaml`
-fi
-
 # Export some APPSODY env vars
 hostWorkspacePath=`$util getWorkspacePathForVolumeMounting $LOCAL_WORKSPACE`
 export APPSODY_MOUNT_HOME="$hostWorkspacePath/.extensions/appsodyExtension"
@@ -511,5 +506,6 @@ elif [ "$COMMAND" == "rebuild" ]; then
 	create
 # Just return configuration information as last line of output
 else
+	knStack=`/codewind-workspace/.extensions/appsodyExtension/scripts/get-stack.sh .appsody-config.yaml`
 	echo -n "{ \"language\": \"$knStack\" }"
 fi

@@ -2,7 +2,7 @@
 
 This repository is an extension to Codewind that adds support for [Appsody](https://appsody.dev) projects.
 
-- Appsody version: [0.2.8](https://github.com/appsody/appsody/releases/tag/0.2.8)
+- Appsody version: [0.3.0](https://github.com/appsody/appsody/releases/tag/0.3.0)
 - Appsody controller version: [0.2.2](https://github.com/appsody/controller/releases/tag/0.2.2)
 
 ## Installing the Appsody Extension on Codewind
