@@ -3,7 +3,7 @@
 ---
 
 **This repository is deprecated. The new location of the Codewind Appsody extension is https://github.com/eclipse/codewind-appsody-extension, which as of Codewind version 0.3.0, will be automatically
-installed.  If you still have `.extensions/appsodyExtension` in your Codewind workspace, make sure you remove it so the new version of the extension will be used.**
+installed.  If you still have the `.extensions/appsodyExtension` folder in your Codewind workspace, be sure to remove it so the new version of the extension will be used.**
 
 ---
 
